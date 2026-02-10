@@ -59,8 +59,8 @@ export default function MiniTransformice() {
   const JUMP_FORCE = -12;
   const MOVE_SPEED = 5;
   const MOUSE_SIZE = 30;
-  const CANVAS_WIDTH = 800;
-  const CANVAS_HEIGHT = 600;
+  const CANVAS_WIDTH = 640;
+  const CANVAS_HEIGHT = 400;
   const MAP_WIDTH = 3500; // Mapa extenso para 1+ minuto
 
   // Fase 1: Camino hacia el castillo con tema San Valentín
@@ -711,14 +711,15 @@ export default function MiniTransformice() {
       : "Amor no te pases, si está fácil XD";
     
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ userSelect: 'none', WebkitUserSelect: 'none' }}>
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-2" style={{ userSelect: 'none', WebkitUserSelect: 'none' }}>
         {/* Canvas en background (borroso) */}
-        <div className="absolute inset-0 blur-sm">
+        <div className="absolute inset-0 blur-sm flex items-center justify-center">
           <canvas
             ref={canvasRef}
             width={CANVAS_WIDTH}
             height={CANVAS_HEIGHT}
-            className="border-4 border-pink-500 rounded-lg shadow-2xl max-w-full max-h-full"
+            className="border-2 md:border-4 border-pink-500 rounded-lg shadow-2xl"
+            style={{ maxWidth: '100%', maxHeight: '100%', width: 'auto', height: 'auto' }}
           />
         </div>
         
@@ -746,7 +747,7 @@ export default function MiniTransformice() {
     const progress = cinematicProgress;
     
     return (
-      <div className="fixed inset-0 bg-black flex items-center justify-center">
+      <div className="fixed inset-0 bg-black flex items-center justify-center p-2">
         <canvas
           ref={(canvas) => {
             if (!canvas) return;
@@ -938,7 +939,8 @@ export default function MiniTransformice() {
           }}
           width={CANVAS_WIDTH}
           height={CANVAS_HEIGHT}
-          className="border-4 border-purple-800 rounded-lg shadow-2xl"
+          className="border-2 md:border-4 border-purple-800 rounded-lg shadow-2xl max-w-full max-h-full"
+          style={{ width: 'auto', height: 'auto' }}
         />
       </div>
     );
@@ -950,7 +952,7 @@ export default function MiniTransformice() {
     const scale = 1 + (progress / 100) * 2; // De escala 1 a 3
     
     return (
-      <div className="fixed inset-0 bg-black flex items-center justify-center">
+      <div className="fixed inset-0 bg-black flex items-center justify-center p-2 overflow-hidden">
         <div style={{ transform: `scale(${scale})`, transition: 'transform 0.1s ease-out' }}>
           <canvas
             ref={(canvas) => {
@@ -967,48 +969,48 @@ export default function MiniTransformice() {
               
               // Paredes de piedra
               ctx.fillStyle = '#505060';
-              ctx.fillRect(0, 0, 50, CANVAS_HEIGHT);
-              ctx.fillRect(CANVAS_WIDTH - 50, 0, 50, CANVAS_HEIGHT);
+              ctx.fillRect(0, 0, 40, CANVAS_HEIGHT);
+              ctx.fillRect(CANVAS_WIDTH - 40, 0, 40, CANVAS_HEIGHT);
               
               // Suelo de piedra
               ctx.fillStyle = '#3a3a4a';
-              ctx.fillRect(0, 500, CANVAS_WIDTH, 100);
+              ctx.fillRect(0, CANVAS_HEIGHT - 80, CANVAS_WIDTH, 80);
               
               // Ventana
               ctx.fillStyle = '#87CEEB';
-              ctx.fillRect(100, 150, 100, 120);
+              ctx.fillRect(80, 120, 80, 100);
               ctx.strokeStyle = '#2a2a2a';
-              ctx.lineWidth = 8;
-              ctx.strokeRect(100, 150, 100, 120);
+              ctx.lineWidth = 6;
+              ctx.strokeRect(80, 120, 80, 100);
               ctx.beginPath();
-              ctx.moveTo(150, 150);
-              ctx.lineTo(150, 270);
-              ctx.moveTo(100, 210);
-              ctx.lineTo(200, 210);
+              ctx.moveTo(120, 120);
+              ctx.lineTo(120, 220);
+              ctx.moveTo(80, 170);
+              ctx.lineTo(160, 170);
               ctx.stroke();
               
               // Cuadro
               ctx.fillStyle = '#8B4513';
-              ctx.fillRect(550, 180, 120, 100);
+              ctx.fillRect(CANVAS_WIDTH - 140, 140, 100, 80);
               ctx.fillStyle = '#FFB6D9';
-              ctx.fillRect(560, 190, 100, 80);
-              ctx.font = '40px Arial';
-              ctx.fillText('💖', 580, 240);
+              ctx.fillRect(CANVAS_WIDTH - 135, 145, 90, 70);
+              ctx.font = '32px Arial';
+              ctx.fillText('💖', CANVAS_WIDTH - 120, 190);
               
               // Cama
               ctx.fillStyle = '#4a2a1a';
-              ctx.fillRect(550, 420, 200, 80);
+              ctx.fillRect(CANVAS_WIDTH - 180, CANVAS_HEIGHT - 120, 160, 60);
               ctx.fillStyle = '#FF69B4';
-              ctx.fillRect(550, 400, 200, 40);
+              ctx.fillRect(CANVAS_WIDTH - 180, CANVAS_HEIGHT - 140, 160, 30);
               ctx.strokeStyle = '#FF1493';
               ctx.lineWidth = 2;
-              ctx.strokeRect(550, 400, 200, 40);
+              ctx.strokeRect(CANVAS_WIDTH - 180, CANVAS_HEIGHT - 140, 160, 30);
               ctx.fillStyle = '#FFB6D9';
-              ctx.fillRect(560, 390, 50, 20);
+              ctx.fillRect(CANVAS_WIDTH - 175, CANVAS_HEIGHT - 150, 40, 15);
               
               // Princesa Diana
-              const dianaX = 400;
-              const dianaY = 450;
+              const dianaX = CANVAS_WIDTH * 0.6;
+              const dianaY = CANVAS_HEIGHT - 110;
               ctx.fillStyle = '#FFE4E1';
               ctx.beginPath();
               ctx.arc(dianaX, dianaY, 25, 0, Math.PI * 2);
@@ -1024,7 +1026,8 @@ export default function MiniTransformice() {
             }}
             width={CANVAS_WIDTH}
             height={CANVAS_HEIGHT}
-            className="border-4 border-purple-800 rounded-lg"
+            className="border-2 md:border-4 border-purple-800 rounded-lg"
+            style={{ maxWidth: '90vw', maxHeight: '90vh', width: 'auto', height: 'auto' }}
           />
         </div>
       </div>
@@ -1034,10 +1037,10 @@ export default function MiniTransformice() {
   // Diálogo/Cutscene interactivo
   if (phase === 'dialogue') {
     return (
-      <div className="fixed inset-0 flex items-center justify-center" style={{
+      <div className="fixed inset-0 flex items-center justify-center p-2" style={{
         background: 'linear-gradient(to bottom, #4a4a6a, #2a2a3a)'
       }}>
-        <div className="relative w-full h-full max-w-4xl">
+        <div className="relative w-full h-full flex items-center justify-center">
           {/* Habitación de fondo */}
           <canvas
             ref={(canvas) => {
@@ -1046,61 +1049,61 @@ export default function MiniTransformice() {
               if (!ctx) return;
               
               // Fondo
-              const gradient = ctx.createLinearGradient(0, 0, 0, 600);
+              const gradient = ctx.createLinearGradient(0, 0, 0, CANVAS_HEIGHT);
               gradient.addColorStop(0, '#4a4a6a');
               gradient.addColorStop(1, '#2a2a3a');
               ctx.fillStyle = gradient;
-              ctx.fillRect(0, 0, 800, 600);
+              ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
               
               // Paredes
               ctx.fillStyle = '#505060';
-              ctx.fillRect(0, 0, 50, 600);
-              ctx.fillRect(750, 0, 50, 600);
+              ctx.fillRect(0, 0, 40, CANVAS_HEIGHT);
+              ctx.fillRect(CANVAS_WIDTH - 40, 0, 40, CANVAS_HEIGHT);
               
               // Suelo
               ctx.fillStyle = '#3a3a4a';
-              ctx.fillRect(0, 500, 800, 100);
+              ctx.fillRect(0, CANVAS_HEIGHT - 80, CANVAS_WIDTH, 80);
               
               // Ventana con mensaje inicial
               ctx.fillStyle = '#87CEEB';
-              ctx.fillRect(100, 150, 100, 120);
+              ctx.fillRect(80, 120, 80, 100);
               ctx.strokeStyle = '#2a2a2a';
-              ctx.lineWidth = 8;
-              ctx.strokeRect(100, 150, 100, 120);
+              ctx.lineWidth = 6;
+              ctx.strokeRect(80, 120, 80, 100);
               
               if (dialogueStep === 0) {
                 // Mensaje "DIANAAAAAAAAAAA" en la ventana
                 ctx.fillStyle = '#FF1493';
-                ctx.font = 'bold 24px Arial';
+                ctx.font = 'bold 18px Arial';
                 ctx.save();
-                ctx.translate(150, 210);
+                ctx.translate(120, 170);
                 ctx.rotate(-Math.PI / 2);
-                ctx.fillText('DIANAAAAAAAAAAA', -80, 0);
+                ctx.fillText('DIANAAAAAAAAAAA', -70, 0);
                 ctx.restore();
               }
               
               // Cuadro
               ctx.fillStyle = '#8B4513';
-              ctx.fillRect(550, 180, 120, 100);
+              ctx.fillRect(CANVAS_WIDTH - 140, 140, 100, 80);
               ctx.fillStyle = '#FFB6D9';
-              ctx.fillRect(560, 190, 100, 80);
-              ctx.font = '40px Arial';
-              ctx.fillText('💖', 580, 240);
+              ctx.fillRect(CANVAS_WIDTH - 135, 145, 90, 70);
+              ctx.font = '32px Arial';
+              ctx.fillText('💖', CANVAS_WIDTH - 120, 190);
               
               // Cama
               ctx.fillStyle = '#4a2a1a';
-              ctx.fillRect(550, 420, 200, 80);
+              ctx.fillRect(CANVAS_WIDTH - 180, CANVAS_HEIGHT - 120, 160, 60);
               ctx.fillStyle = '#FF69B4';
-              ctx.fillRect(550, 400, 200, 40);
+              ctx.fillRect(CANVAS_WIDTH - 180, CANVAS_HEIGHT - 140, 160, 30);
               ctx.strokeStyle = '#FF1493';
               ctx.lineWidth = 2;
-              ctx.strokeRect(550, 400, 200, 40);
+              ctx.strokeRect(CANVAS_WIDTH - 180, CANVAS_HEIGHT - 140, 160, 30);
               ctx.fillStyle = '#FFB6D9';
-              ctx.fillRect(560, 390, 50, 20);
+              ctx.fillRect(CANVAS_WIDTH - 175, CANVAS_HEIGHT - 150, 40, 15);
               
               // Princesa Diana
-              const dianaX = 400;
-              const dianaY = showExclamation ? 430 : 450; // Salto cuando hay exclamación
+              const dianaX = CANVAS_WIDTH * 0.6;
+              const dianaY = showExclamation ? CANVAS_HEIGHT - 130 : CANVAS_HEIGHT - 110; // Salto cuando hay exclamación
               ctx.fillStyle = '#FFE4E1';
               ctx.beginPath();
               ctx.arc(dianaX, dianaY, 30, 0, Math.PI * 2);
@@ -1127,8 +1130,8 @@ export default function MiniTransformice() {
               
               // Ratón macho si ya entró
               if (boyMouseInRoom) {
-                const boyX = 250;
-                const boyY = 450;
+                const boyX = CANVAS_WIDTH * 0.35;
+                const boyY = CANVAS_HEIGHT - 110;
                 ctx.fillStyle = '#8B4513';
                 ctx.beginPath();
                 ctx.arc(boyX, boyY, 30, 0, Math.PI * 2);
@@ -1152,9 +1155,10 @@ export default function MiniTransformice() {
                 ctx.stroke();
               }
             }}
-            width={800}
-            height={600}
-            className="w-full h-full"
+            width={CANVAS_WIDTH}
+            height={CANVAS_HEIGHT}
+            className="border-2 md:border-4 border-purple-800 rounded-lg shadow-2xl"
+            style={{ maxWidth: '100%', maxHeight: '100%', width: 'auto', height: 'auto' }}
           />
           
           {/* Diálogos */}
@@ -1310,8 +1314,8 @@ export default function MiniTransformice() {
     const radius = ((100 - transitionProgress) / 100) * Math.max(CANVAS_WIDTH, CANVAS_HEIGHT) * 1.5;
     
     return (
-      <div className="fixed inset-0 bg-black flex items-center justify-center">
-        <svg width={CANVAS_WIDTH} height={CANVAS_HEIGHT}>
+      <div className="fixed inset-0 bg-black flex items-center justify-center p-2">
+        <svg width={CANVAS_WIDTH} height={CANVAS_HEIGHT} className="max-w-full max-h-full" style={{ width: 'auto', height: 'auto' }}>
           <defs>
             <mask id="circleMask">
               <rect width={CANVAS_WIDTH} height={CANVAS_HEIGHT} fill="black" />
@@ -1335,17 +1339,18 @@ export default function MiniTransformice() {
   }
 
   return (
-    <div className="fixed inset-0 bg-purple-900 flex items-center justify-center">
-      <div className="relative">
+    <div className="fixed inset-0 bg-purple-900 flex items-center justify-center p-2">
+      <div className="relative w-full h-full flex items-center justify-center">
         <canvas
           ref={canvasRef}
           width={CANVAS_WIDTH}
           height={CANVAS_HEIGHT}
-          className="border-4 border-pink-500 rounded-lg shadow-2xl max-w-full max-h-full"
+          className="border-2 md:border-4 border-pink-500 rounded-lg shadow-2xl"
+          style={{ maxWidth: '100%', maxHeight: '100%', width: 'auto', height: 'auto' }}
         />
         
         {/* Mobile touch controls */}
-        <div className="absolute bottom-2 left-0 right-0 flex justify-between px-4 md:hidden" style={{ userSelect: 'none', touchAction: 'manipulation' }}>
+        <div className="fixed bottom-4 left-0 right-0 flex justify-between px-4 md:hidden z-50" style={{ userSelect: 'none', touchAction: 'manipulation' }}>
           <div className="flex gap-3">
             <button
               onTouchStart={(e) => { e.preventDefault(); handleTouchStart('left'); }}
