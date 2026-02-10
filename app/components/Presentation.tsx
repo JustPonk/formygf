@@ -26,31 +26,31 @@ export default function Presentation({ onComplete }: { onComplete: () => void })
   }, [onComplete]);
 
   return (
-    <div className="fixed inset-0 bg-gradient-to-br from-pink-200 via-pink-100 to-rose-200 flex items-center justify-center overflow-hidden">
+    <div className="fixed inset-0 bg-gradient-to-br from-pink-200 via-pink-100 to-rose-200 flex items-center justify-center overflow-hidden" style={{ userSelect: 'none', WebkitUserSelect: 'none' }}>
       {/* Wood texture overlay */}
       <div className="absolute inset-0 opacity-10 bg-[repeating-linear-gradient(90deg,#8B4513_0px,#8B4513_2px,transparent_2px,transparent_8px)]"></div>
       
       {/* Flowers in corners */}
-      <div className="absolute top-4 left-4 text-6xl animate-bounce">🌸</div>
-      <div className="absolute top-4 right-4 text-6xl animate-bounce delay-100">🌺</div>
-      <div className="absolute bottom-4 left-4 text-6xl animate-bounce delay-200">🌷</div>
-      <div className="absolute bottom-4 right-4 text-6xl animate-bounce delay-300">🌹</div>
+      <div className="absolute top-2 left-2 md:top-4 md:left-4 text-3xl md:text-6xl animate-bounce">🌸</div>
+      <div className="absolute top-2 right-2 md:top-4 md:right-4 text-3xl md:text-6xl animate-bounce delay-100">🌺</div>
+      <div className="absolute bottom-2 left-2 md:bottom-4 md:left-4 text-3xl md:text-6xl animate-bounce delay-200">🌷</div>
+      <div className="absolute bottom-2 right-2 md:bottom-4 md:right-4 text-3xl md:text-6xl animate-bounce delay-300">🌹</div>
       
       {/* Main message */}
-      <div className={`text-center z-10 transition-all duration-1000 ${show ? 'opacity-100 scale-100' : 'opacity-0 scale-50'}`}>
+      <div className={`text-center z-10 transition-all duration-1000 px-4 ${show ? 'opacity-100 scale-100' : 'opacity-0 scale-50'}`}>
         {phase === 1 ? (
           <>
-            <h1 className="text-5xl md:text-7xl font-bold text-pink-600 mb-4 drop-shadow-lg" style={{ fontFamily: 'cursive' }}>
+            <h1 className="text-3xl md:text-5xl lg:text-7xl font-bold text-pink-600 mb-4 drop-shadow-lg" style={{ fontFamily: 'cursive' }}>
               Buenos días preciosa
             </h1>
-            <div className="text-8xl animate-pulse">💖</div>
+            <div className="text-5xl md:text-8xl animate-pulse">💖</div>
           </>
         ) : (
           <>
-            <h1 className="text-4xl md:text-6xl font-bold text-purple-600 mb-4 drop-shadow-lg animate-bounce" style={{ fontFamily: 'cursive' }}>
+            <h1 className="text-2xl md:text-4xl lg:text-6xl font-bold text-purple-600 mb-4 drop-shadow-lg animate-bounce" style={{ fontFamily: 'cursive' }}>
               Hoy es un buen día para...
             </h1>
-            <div className="text-9xl animate-ping">🎮</div>
+            <div className="text-6xl md:text-9xl animate-ping">🎮</div>
           </>
         )}
       </div>

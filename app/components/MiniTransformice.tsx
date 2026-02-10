@@ -48,6 +48,11 @@ export default function MiniTransformice() {
   const isOnGround = useRef(false);
   const keys = useRef<{ [key: string]: boolean }>({});
   const animationFrame = useRef<number | undefined>(undefined);
+  
+  // Touch controls refs
+  const touchLeft = useRef(false);
+  const touchRight = useRef(false);
+  const touchJump = useRef(false);
 
   // Game constants
   const GRAVITY = 0.6;
@@ -292,16 +297,16 @@ export default function MiniTransformice() {
 
     // Game loop
     const gameLoop = () => {
-      // Handle input
-      if (keys.current['ArrowLeft'] || keys.current['a']) {
+      // Handle input (keyboard + touch)
+      if (keys.current['ArrowLeft'] || keys.current['a'] || touchLeft.current) {
         velocity.current.x = -MOVE_SPEED;
-      } else if (keys.current['ArrowRight'] || keys.current['d']) {
+      } else if (keys.current['ArrowRight'] || keys.current['d'] || touchRight.current) {
         velocity.current.x = MOVE_SPEED;
       } else {
         velocity.current.x *= 0.8; // Friction
       }
 
-      if ((keys.current[' '] || keys.current['ArrowUp'] || keys.current['w']) && isOnGround.current) {
+      if ((keys.current[' '] || keys.current['ArrowUp'] || keys.current['w'] || touchJump.current) && isOnGround.current) {
         velocity.current.y = JUMP_FORCE;
         isOnGround.current = false;
       }
@@ -679,14 +684,23 @@ export default function MiniTransformice() {
     };
   }, [gameStarted, phase]);
 
-  const handleTouchButton = (direction: 'left' | 'right' | 'jump') => {
+  const handleTouchStart = (direction: 'left' | 'right' | 'jump') => {
     if (direction === 'left') {
-      velocity.current.x = -MOVE_SPEED;
+      touchLeft.current = true;
     } else if (direction === 'right') {
-      velocity.current.x = MOVE_SPEED;
-    } else if (direction === 'jump' && isOnGround.current) {
-      velocity.current.y = JUMP_FORCE;
-      isOnGround.current = false;
+      touchRight.current = true;
+    } else if (direction === 'jump') {
+      touchJump.current = true;
+    }
+  };
+
+  const handleTouchEnd = (direction: 'left' | 'right' | 'jump') => {
+    if (direction === 'left') {
+      touchLeft.current = false;
+    } else if (direction === 'right') {
+      touchRight.current = false;
+    } else if (direction === 'jump') {
+      touchJump.current = false;
     }
   };
 
@@ -697,7 +711,7 @@ export default function MiniTransformice() {
       : "Amor no te pases, si está fácil XD";
     
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center">
+      <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ userSelect: 'none', WebkitUserSelect: 'none' }}>
         {/* Canvas en background (borroso) */}
         <div className="absolute inset-0 blur-sm">
           <canvas
@@ -709,15 +723,16 @@ export default function MiniTransformice() {
         </div>
         
         {/* Death overlay */}
-        <div className="relative bg-black bg-opacity-70 p-8 rounded-2xl text-center max-w-md shadow-2xl border-4 border-pink-500">
-          <div className="text-6xl mb-4">💔</div>
-          <h2 className="text-4xl font-bold text-white mb-4">Woops</h2>
-          <p className="text-xl text-pink-200 mb-6 font-semibold">{deathMessage}</p>
+        <div className="relative bg-black bg-opacity-70 p-6 md:p-8 rounded-2xl text-center max-w-md shadow-2xl border-4 border-pink-500">
+          <div className="text-4xl md:text-6xl mb-3 md:mb-4">💔</div>
+          <h2 className="text-2xl md:text-4xl font-bold text-white mb-3 md:mb-4">Woops</h2>
+          <p className="text-base md:text-xl text-pink-200 mb-4 md:mb-6 font-semibold">{deathMessage}</p>
           <button
             onClick={() => {
               setIsDead(false);
             }}
-            className="bg-pink-600 hover:bg-pink-700 text-white font-bold py-4 px-8 rounded-full text-xl transition-all transform hover:scale-110 shadow-lg"
+            className="bg-pink-600 hover:bg-pink-700 active:bg-pink-800 text-white font-bold py-3 px-6 md:py-4 md:px-8 rounded-full text-lg md:text-xl transition-all transform active:scale-95 shadow-lg"
+            style={{ userSelect: 'none', WebkitUserSelect: 'none', touchAction: 'manipulation' }}
           >
             Revivir 💖
           </button>
@@ -1144,15 +1159,16 @@ export default function MiniTransformice() {
           
           {/* Diálogos */}
           {dialogueStep >= 3 && (
-            <div className="absolute bottom-4 left-4 right-4">
+            <div className="absolute bottom-2 left-2 right-2 max-h-[40vh] overflow-y-auto" style={{ userSelect: 'none', WebkitUserSelect: 'none' }}>
               {dialogueStep === 3 && (
-                <div className="bg-black bg-opacity-80 p-6 rounded-lg">
-                  <p className="text-white text-lg mb-4">
+                <div className="bg-black bg-opacity-90 p-3 rounded-lg">
+                  <p className="text-white text-sm md:text-lg mb-3">
                     <span className="font-bold text-amber-600">🐭 jeff:</span> "dios santo, estoy muerto? o por q tengo a un angel frente a mis ojos?"
                   </p>
                   <button
                     onClick={() => setDialogueStep(4)}
-                    className="bg-pink-500 hover:bg-pink-600 text-white px-6 py-2 rounded-full"
+                    className="bg-pink-500 hover:bg-pink-600 active:bg-pink-700 text-white px-4 py-2 rounded-full text-sm md:text-base font-semibold"
+                    style={{ userSelect: 'none', WebkitUserSelect: 'none', touchAction: 'manipulation' }}
                   >
                     Continuar
                   </button>
@@ -1160,13 +1176,14 @@ export default function MiniTransformice() {
               )}
               
               {dialogueStep === 4 && (
-                <div className="bg-black bg-opacity-80 p-6 rounded-lg">
-                  <p className="text-white text-lg mb-4">
+                <div className="bg-black bg-opacity-90 p-3 rounded-lg">
+                  <p className="text-white text-sm md:text-lg mb-3">
                     <span className="font-bold text-pink-400">👑 Diana:</span> "ola wapo, q te paso"
                   </p>
                   <button
                     onClick={() => setDialogueStep(5)}
-                    className="bg-pink-500 hover:bg-pink-600 text-white px-6 py-2 rounded-full"
+                    className="bg-pink-500 hover:bg-pink-600 active:bg-pink-700 text-white px-4 py-2 rounded-full text-sm md:text-base font-semibold"
+                    style={{ userSelect: 'none', WebkitUserSelect: 'none', touchAction: 'manipulation' }}
                   >
                     Continuar
                   </button>
@@ -1174,20 +1191,22 @@ export default function MiniTransformice() {
               )}
               
               {dialogueStep === 5 && (
-                <div className="bg-black bg-opacity-80 p-6 rounded-lg">
-                  <p className="text-white text-lg mb-4">
+                <div className="bg-black bg-opacity-90 p-3 rounded-lg">
+                  <p className="text-white text-sm md:text-lg mb-3">
                     <span className="font-bold text-amber-600">🐭 jeff:</span> "no nada, solo q estabas resguardada por un dragon q casi me come, pero me lo comi yo, con su propio fuego hice parrilla, quieres?"
                   </p>
-                  <div className="flex gap-4">
+                  <div className="flex gap-3">
                     <button
                       onClick={() => setDialogueStep(6)}
-                      className="bg-pink-500 hover:bg-pink-600 text-white px-6 py-3 rounded-full font-bold"
+                      className="bg-pink-500 hover:bg-pink-600 active:bg-pink-700 text-white px-4 py-2 rounded-full font-bold text-sm md:text-base"
+                      style={{ userSelect: 'none', WebkitUserSelect: 'none', touchAction: 'manipulation' }}
                     >
                       sii
                     </button>
                     <button
                       onClick={() => setDialogueStep(6)}
-                      className="bg-purple-500 hover:bg-purple-600 text-white px-6 py-3 rounded-full font-bold"
+                      className="bg-purple-500 hover:bg-purple-600 active:bg-purple-700 text-white px-4 py-2 rounded-full font-bold text-sm md:text-base"
+                      style={{ userSelect: 'none', WebkitUserSelect: 'none', touchAction: 'manipulation' }}
                     >
                       nativas?
                     </button>
@@ -1196,13 +1215,14 @@ export default function MiniTransformice() {
               )}
               
               {dialogueStep === 6 && (
-                <div className="bg-black bg-opacity-80 p-6 rounded-lg">
-                  <p className="text-white text-lg mb-4">
+                <div className="bg-black bg-opacity-90 p-3 rounded-lg">
+                  <p className="text-white text-sm md:text-lg mb-3">
                     <span className="font-bold text-amber-600">🐭 jeff:</span> "YA GOO, pero mira te traje algo"
                   </p>
                   <button
                     onClick={() => setDialogueStep(7)}
-                    className="bg-yellow-500 hover:bg-yellow-600 text-white px-8 py-3 rounded-full font-bold text-xl"
+                    className="bg-yellow-500 hover:bg-yellow-600 active:bg-yellow-700 text-white px-6 py-2 rounded-full font-bold text-base md:text-xl"
+                    style={{ userSelect: 'none', WebkitUserSelect: 'none', touchAction: 'manipulation' }}
                   >
                     🎁 Abrir
                   </button>
@@ -1210,26 +1230,28 @@ export default function MiniTransformice() {
               )}
               
               {dialogueStep === 7 && (
-                <div className="relative bg-gradient-to-br from-amber-50 to-yellow-50 p-12 rounded-lg border-8 shadow-2xl text-center" style={{
+                <div className="relative bg-gradient-to-br from-amber-50 to-yellow-50 p-4 md:p-8 rounded-lg border-4 md:border-8 shadow-2xl text-center max-h-[85vh] overflow-y-auto" style={{
                   borderImage: 'repeating-linear-gradient(45deg, #8B4513, #8B4513 10px, #D2691E 10px, #D2691E 20px) 8',
-                  boxShadow: '0 10px 40px rgba(0,0,0,0.3), inset 0 0 20px rgba(139,69,19,0.1)'
+                  boxShadow: '0 10px 40px rgba(0,0,0,0.3), inset 0 0 20px rgba(139,69,19,0.1)',
+                  userSelect: 'none',
+                  WebkitUserSelect: 'none'
                 }}>
                   {/* Decoraciones de esquina vintage */}
-                  <div className="absolute top-4 left-4 text-4xl text-amber-700">❦</div>
-                  <div className="absolute top-4 right-4 text-4xl text-amber-700">❦</div>
-                  <div className="absolute bottom-4 left-4 text-4xl text-amber-700">❦</div>
-                  <div className="absolute bottom-4 right-4 text-4xl text-amber-700">❦</div>
+                  <div className="absolute top-1 left-1 md:top-4 md:left-4 text-xl md:text-4xl text-amber-700">❦</div>
+                  <div className="absolute top-1 right-1 md:top-4 md:right-4 text-xl md:text-4xl text-amber-700">❦</div>
+                  <div className="absolute bottom-1 left-1 md:bottom-4 md:left-4 text-xl md:text-4xl text-amber-700">❦</div>
+                  <div className="absolute bottom-1 right-1 md:bottom-4 md:right-4 text-xl md:text-4xl text-amber-700">❦</div>
                   
                   {/* Contenido de la carta */}
                   <div className="relative z-10">
-                    <div className="border-t-2 border-b-2 border-amber-800 py-2 mb-6">
-                      <h2 className="text-2xl font-serif text-amber-900 tracking-wider" style={{ fontFamily: 'Georgia, serif' }}>
+                    <div className="border-t-2 border-b-2 border-amber-800 py-1 mb-3 md:py-2 md:mb-6">
+                      <h2 className="text-sm md:text-2xl font-serif text-amber-900 tracking-wider" style={{ fontFamily: 'Georgia, serif' }}>
                         ❦ SAN VALENTIN'S LETTER ❦
                       </h2>
                     </div>
                     
-                    <div className="my-8">
-                      <p className="text-3xl text-amber-900 mb-8 leading-relaxed" style={{ 
+                    <div className="my-4 md:my-8">
+                      <p className="text-lg md:text-3xl text-amber-900 mb-4 md:mb-8 leading-relaxed" style={{ 
                         fontFamily: 'Georgia, serif',
                         fontStyle: 'italic',
                         textShadow: '1px 1px 2px rgba(139,69,19,0.2)'
@@ -1237,30 +1259,30 @@ export default function MiniTransformice() {
                         ¿Me darías el gran honor<br />de ser tu San Valentín?
                       </p>
                       
-                      <div className="flex items-center justify-center gap-2 mb-6">
-                        <div className="h-px w-16 bg-amber-600"></div>
-                        <span className="text-2xl">🧀</span>
-                        <div className="h-px w-16 bg-amber-600"></div>
+                      <div className="flex items-center justify-center gap-2 mb-3 md:mb-6">
+                        <div className="h-px w-8 md:w-16 bg-amber-600"></div>
+                        <span className="text-lg md:text-2xl">🧀</span>
+                        <div className="h-px w-8 md:w-16 bg-amber-600"></div>
                       </div>
                       
-                      <p className="text-xl text-amber-800 mb-2" style={{ fontFamily: 'Georgia, serif' }}>
+                      <p className="text-base md:text-xl text-amber-800 mb-1 md:mb-2" style={{ fontFamily: 'Georgia, serif' }}>
                         tengo quesito
                       </p>
-                      <p className="text-lg text-amber-700 italic mb-8">y nativas en la noche uwu</p>
+                      <p className="text-sm md:text-lg text-amber-700 italic mb-4 md:mb-8">y nativas en la noche uwu</p>
                     </div>
                     
-                    <div className="flex gap-6 justify-center mt-8">
+                    <div className="flex gap-3 md:gap-6 justify-center mt-4 md:mt-8">
                       <button
                         onClick={() => setDialogueStep(8)}
-                        className="bg-amber-800 hover:bg-amber-900 text-amber-50 px-14 py-5 rounded border-4 border-amber-950 font-bold text-2xl transform hover:scale-105 transition-all shadow-lg"
-                        style={{ fontFamily: 'Georgia, serif' }}
+                        className="bg-amber-800 hover:bg-amber-900 active:bg-amber-950 text-amber-50 px-6 md:px-14 py-3 md:py-5 rounded border-2 md:border-4 border-amber-950 font-bold text-base md:text-2xl transform active:scale-95 transition-all shadow-lg"
+                        style={{ fontFamily: 'Georgia, serif', userSelect: 'none', WebkitUserSelect: 'none', touchAction: 'manipulation' }}
                       >
                         Sí
                       </button>
                       <button
                         onClick={() => setDialogueStep(8)}
-                        className="bg-amber-900 hover:bg-amber-950 text-amber-50 px-14 py-5 rounded border-4 border-amber-950 font-bold text-2xl transform hover:scale-105 transition-all shadow-lg"
-                        style={{ fontFamily: 'Georgia, serif' }}
+                        className="bg-amber-900 hover:bg-amber-950 active:bg-black text-amber-50 px-6 md:px-14 py-3 md:py-5 rounded border-2 md:border-4 border-amber-950 font-bold text-base md:text-2xl transform active:scale-95 transition-all shadow-lg"
+                        style={{ fontFamily: 'Georgia, serif', userSelect: 'none', WebkitUserSelect: 'none', touchAction: 'manipulation' }}
                       >
                         ¡SÍ!
                       </button>
@@ -1270,10 +1292,10 @@ export default function MiniTransformice() {
               )}
               
               {dialogueStep === 8 && (
-                <div className="bg-gradient-to-br from-pink-300 to-purple-300 p-12 rounded-lg text-center">
-                  <h1 className="text-6xl font-bold text-white mb-6 animate-bounce">¡Nos vemos el 14 en nativas! 💖</h1>
-                  <p className="text-3xl text-white mb-4">Te amo mucho mi ratatuina come quesito</p>
-                  <div className="text-8xl">🐭💖🐭🧀</div>
+                <div className="bg-gradient-to-br from-pink-300 to-purple-300 p-6 md:p-12 rounded-lg text-center">
+                  <h1 className="text-3xl md:text-6xl font-bold text-white mb-4 md:mb-6 animate-bounce">¡Nos vemos el 14 en nativas! 💖</h1>
+                  <p className="text-lg md:text-3xl text-white mb-2 md:mb-4">Te amo mucho mi ratatuina come quesito</p>
+                  <div className="text-4xl md:text-8xl">🐭💖🐭🧀</div>
                 </div>
               )}
             </div>
@@ -1323,31 +1345,37 @@ export default function MiniTransformice() {
         />
         
         {/* Mobile touch controls */}
-        <div className="absolute bottom-4 left-0 right-0 flex justify-between px-8 md:hidden">
-          <div className="flex gap-2">
+        <div className="absolute bottom-2 left-0 right-0 flex justify-between px-4 md:hidden" style={{ userSelect: 'none', touchAction: 'manipulation' }}>
+          <div className="flex gap-3">
             <button
-              onTouchStart={() => handleTouchButton('left')}
-              className="bg-pink-500 bg-opacity-70 text-white font-bold w-16 h-16 rounded-full active:bg-pink-600 text-2xl"
+              onTouchStart={(e) => { e.preventDefault(); handleTouchStart('left'); }}
+              onTouchEnd={(e) => { e.preventDefault(); handleTouchEnd('left'); }}
+              className="bg-pink-500 bg-opacity-80 text-white font-bold w-20 h-20 rounded-full active:bg-pink-600 text-3xl shadow-lg border-2 border-pink-300"
+              style={{ userSelect: 'none', WebkitUserSelect: 'none', touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
             >
-              ←
+              <span style={{ pointerEvents: 'none' }}>←</span>
             </button>
             <button
-              onTouchStart={() => handleTouchButton('right')}
-              className="bg-pink-500 bg-opacity-70 text-white font-bold w-16 h-16 rounded-full active:bg-pink-600 text-2xl"
+              onTouchStart={(e) => { e.preventDefault(); handleTouchStart('right'); }}
+              onTouchEnd={(e) => { e.preventDefault(); handleTouchEnd('right'); }}
+              className="bg-pink-500 bg-opacity-80 text-white font-bold w-20 h-20 rounded-full active:bg-pink-600 text-3xl shadow-lg border-2 border-pink-300"
+              style={{ userSelect: 'none', WebkitUserSelect: 'none', touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
             >
-              →
+              <span style={{ pointerEvents: 'none' }}>→</span>
             </button>
           </div>
           <button
-            onTouchStart={() => handleTouchButton('jump')}
-            className="bg-pink-600 bg-opacity-70 text-white font-bold w-16 h-16 rounded-full active:bg-pink-700 text-2xl"
+            onTouchStart={(e) => { e.preventDefault(); handleTouchStart('jump'); }}
+            onTouchEnd={(e) => { e.preventDefault(); handleTouchEnd('jump'); }}
+            className="bg-pink-600 bg-opacity-80 text-white font-bold w-20 h-20 rounded-full active:bg-pink-700 text-3xl shadow-lg border-2 border-pink-300"
+            style={{ userSelect: 'none', WebkitUserSelect: 'none', touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
           >
-            ↑
+            <span style={{ pointerEvents: 'none' }}>↑</span>
           </button>
         </div>
 
         {/* Status indicator */}
-        <div className="absolute top-4 right-4 bg-pink-500 bg-opacity-80 text-white px-4 py-2 rounded-lg font-bold">
+        <div className="absolute top-2 right-2 bg-pink-500 bg-opacity-90 text-white px-2 py-1 md:px-4 md:py-2 rounded-lg font-bold text-xs md:text-base" style={{ userSelect: 'none', WebkitUserSelect: 'none', pointerEvents: 'none' }}>
           {phase === 'phase1' ? '🐭 Dirígete al castillo 🏰' : '🏰 Dentro del castillo'}
         </div>
       </div>
